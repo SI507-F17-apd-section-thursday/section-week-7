@@ -19,13 +19,14 @@ print('Count1', count1)
 # TODO Write code for Counter 2
 class Counter2:
     def __init__(self, start):
-        pass
+        self.count = start
 
     def __iter__(self):
-        pass
+        return self
 
     def __next__(self):
-        pass
+        self.count += 1
+        return self.count
 
 from itertools import islice
 # counter can keep counting infinitely in a while loop
@@ -35,6 +36,7 @@ from itertools import islice
 counter2 = Counter2(start=13)
 for i in range(10):
     count2 = next(counter2)
+    # print('count2', count2)
 
 print('Count2', count2)
 
@@ -57,13 +59,23 @@ print('Count2', count2)
 # Generator -------------------------------------------------------------------
 # TODO Write code for counter3
 def counter3(start):
-    pass
+    count = start
+    while True:
+        count += 1
+        yield count
 
 c3 = counter3(13)
+print(type(c3))
+print(c3.__next__)
 for i in range(10):
     count3 = next(c3)
 
 print('Count3', count3)
+
+c4 = counter3(100)
+for i in range(10):
+    count4 = next(c4)
+print('Count4', count4)
 
 # -----------------------------------------------------------------------------
 # A valid use case of reading large files
@@ -107,22 +119,27 @@ def without_iterators():
 class ReadFileLines:
     def __init__(self, file_path):
         # open the file here and store it in file object
-        pass
+        self.file_obj = open(file_path, 'r', encoding='utf-8')
+        # print(type(self.file_obj))
 
     def __iter__(self):
         '''Should return an iterator object that has the __next__ method'''
-        pass
+        return self.file_obj
 
-    def __next__(self):
-        # get the next line of the file
-        pass
-
+    # def __next__(self):
+    #     # get the next line of the file
+    #     return self.file_obj.__next__()
 
 def with_iterators():
     start = time.time()
     sherlock_content = ReadFileLines('sherlock.txt')
+
+
     print(type(sherlock_content))
     print('# of lines =', count_number_of_lines(sherlock_content))
+
+    # for line in sherlock_content:
+
 
     sherlock_big_content = ReadFileLines('sherlock.big.txt')
     print(type(sherlock_big_content))
@@ -137,14 +154,24 @@ def with_iterators():
 # A generator uses 'yield' statement instead of __next__
 # TODO Write generator code for file_lines_reader
 def file_lines_reader(file_path):
-    pass
+    with open(file_path, 'r', encoding='utf-8') as file_obj:
+        for line in file_obj:
+            yield line
 
 
 def with_generators():
     start = time.time()
     sherlock_content = file_lines_reader('sherlock.txt')
     print(type(sherlock_content))
-    print('# of lines =', count_number_of_lines(sherlock_content))
+
+    count = 0
+    for line in sherlock_content:
+        if len(line) > 40:
+            count += 1
+
+
+    print('# of lines =', count)
+    # print('# of lines =', count_number_of_lines(sherlock_content))
 
     sherlock_big_content = file_lines_reader('sherlock.big.txt')
     print(type(sherlock_big_content))
@@ -160,4 +187,4 @@ def with_generators():
 
 # without_iterators()
 # with_iterators()
-# with_generators()
+with_generators()
